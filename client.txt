@@ -1,0 +1,106 @@
+
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamResolution;
+import java.awt.GridBagConstraints;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.ServerSocket;
+import javax.swing.ImageIcon;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.event.*;
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author prajiet
+ */
+public class cli {
+    static Socket socket;
+    public static void main(String[] args) throws IOException
+{
+    Webcam webcam = Webcam.getDefault();
+    webcam.setViewSize(WebcamResolution.VGA.getSize());
+    webcam.open();
+    
+    
+    ImageIO.write(webcam.getImage(), "PNG", new File("hello-world.png"));
+    
+    socket = new Socket("127.0.0.1", 54339);
+    
+    
+  
+    
+    
+   
+    
+    BufferedImage bm = webcam.getImage();
+    
+    ObjectOutputStream dout = new ObjectOutputStream(socket.getOutputStream());
+    
+    ImageIcon im = new ImageIcon(bm);
+    
+    
+    JFrame frame =new JFrame("pc1");
+    frame.setSize(740,580);
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    
+    JPanel p=new JPanel(new GridBagLayout());
+    GridBagConstraints c=new GridBagConstraints();
+    JButton button = new JButton("Capture");
+    button.addActionListener(new ActionListener(){
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                ImageIO.write(webcam.getImage(), "PNG", new File("hello-world.png")); //To change body of generated methods, choose Tools | Templates.
+            } catch (IOException ex) {
+                Logger.getLogger(cli.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+    });
+    c.gridx=0;
+    c.gridy=2;
+    p.add(button,c);
+    
+    JLabel l =new JLabel();
+    
+    
+    
+    l.setVisible(true);
+    
+    c.gridx=0;
+    c.gridy=1;
+    p.add(l,c);
+    frame.add(p);
+    
+    frame.setVisible(true);
+    
+  
+    while (true)
+    {
+        bm= webcam.getImage();
+        im =new ImageIcon(bm);
+        dout.writeObject(im);
+        l.setIcon(im);
+        dout.flush();
+     
+    }
+   
+    
+    
+}
+}

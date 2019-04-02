@@ -1,0 +1,38 @@
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import static java.lang.System.in;
+import java.net.ServerSocket;
+import java.net.Socket;
+import javax.swing.*;
+import javax.swing.ImageIcon;
+
+
+
+public class server {
+    
+    public static void main(String[] args) throws IOException, ClassNotFoundException 
+{
+    ServerSocket server = new ServerSocket(54339);
+    Socket socket = server.accept();
+
+    ObjectInputStream rcv = new ObjectInputStream(socket.getInputStream());
+    JFrame frame= new JFrame();
+    frame.setSize(640,480);
+    JLabel label = new JLabel();
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    label=new JLabel();
+    label.setVisible(true);
+    
+    frame.add(label);
+    frame.setVisible(true);
+    
+    while (true)
+    {
+        System.out.println("receive");
+        
+        label.setIcon((ImageIcon)rcv.readObject());
+   
+    }
+}
+}
